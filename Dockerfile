@@ -41,7 +41,7 @@ RUN npm run build
 # 生产阶段
 FROM --platform=linux/amd64 harbor.trscd.com.cn/baseapp/node:18-alpine AS production
 
-# 安装运行时依赖
+# 安装运行时依赖和字体支持
 RUN apk add --no-cache \
     fontconfig \
     tzdata \
@@ -52,13 +52,22 @@ RUN apk add --no-cache \
     pixman \
     pangomm \
     libjpeg-turbo \
-    freetype
+    freetype \
+    ttf-dejavu \
+    font-noto \
+    font-noto-cjk \
+    wqy-zenhei
+
+# 创建字体目录并更新字体缓存
+RUN mkdir -p /usr/share/fonts/truetype && \
+    fc-cache -fv
 
 # 设置环境变量
 ENV TZ=Asia/Shanghai
 ENV LANG=zh_CN.UTF-8
 ENV LC_ALL=zh_CN.UTF-8
 ENV NODE_ENV=production
+ENV FONTCONFIG_PATH=/etc/fonts
 
 WORKDIR /app
 
